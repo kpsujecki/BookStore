@@ -3,7 +3,6 @@ package com.sujecki.bookstore.controller;
 import com.sujecki.bookstore.model.Book;
 import com.sujecki.bookstore.model.BookDTO;
 import com.sujecki.bookstore.service.BookService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,8 +15,11 @@ import java.util.Optional;
 @RequestMapping("/api/book")
 public class BookController {
 
-    @Autowired
     private BookService bookService;
+
+    public BookController(BookService bookService) {
+        this.bookService = bookService;
+    }
 
     @GetMapping("/all")
     public ResponseEntity<List<Book>> getAllBooks() {
@@ -59,6 +61,22 @@ public class BookController {
         }
     }
 
+    @PatchMapping("buy/{id}")
+    public ResponseEntity<?> buyBook(@PathVariable Long id) {
+        Optional<Book> book = bookService.getById(id);
+
+        if(book.isPresent()){
+            if(book.get().getTotalCount()>0){
+                bookService.updateStatusBookAfterPurchase(id);
+                return new ResponseEntity<>("Book has been bought successfully", HttpStatus.OK);
+            }else{
+                return new ResponseEntity<>("Book is not available", HttpStatus.valueOf("NOT AVAILABLE"));
+            }
+
+        }else{
+            return new ResponseEntity<>("Not found book with this ID", HttpStatus.NOT_FOUND);
+        }
+    }
 
     @PostMapping("/add")
     public ResponseEntity<?> addNewBook(@RequestBody BookDTO book){

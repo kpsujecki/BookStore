@@ -4,7 +4,6 @@ import com.sujecki.bookstore.model.Book;
 import com.sujecki.bookstore.model.BookDTO;
 import com.sujecki.bookstore.repository.BookRepository;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,8 +12,11 @@ import java.util.Optional;
 @Service
 public class BookService {
 
-    @Autowired
     private BookRepository bookRepository;
+
+    public BookService(BookRepository bookRepository) {
+        this.bookRepository = bookRepository;
+    }
 
     private ModelMapper modelMapper = new ModelMapper();
 
@@ -39,7 +41,18 @@ public class BookService {
     }
 
     public void deleteBook(Long id){
-            Book bookToDelete = bookRepository.getReferenceById(id);
-            bookRepository.delete(bookToDelete);
+
+        Book bookToDelete = bookRepository.getReferenceById(id);
+        bookRepository.delete(bookToDelete);
     }
+
+    public void updateStatusBookAfterPurchase(Long id){
+        Book bookToUpdate = bookRepository.getReferenceById(id);
+
+        bookToUpdate.setTotalCount(bookToUpdate.getTotalCount()-1);
+        bookToUpdate.setSold(bookToUpdate.getSold()+1);
+
+        bookRepository.save(bookToUpdate);
+    }
+
 }
