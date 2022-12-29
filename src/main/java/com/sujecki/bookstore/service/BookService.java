@@ -41,6 +41,5 @@ public class BookService {
     public void deleteBook(Long id){
             Book bookToDelete = bookRepository.getReferenceById(id);
             bookRepository.delete(bookToDelete);
-
     }
 }

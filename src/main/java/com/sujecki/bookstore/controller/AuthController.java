@@ -17,7 +17,6 @@ import com.sujecki.bookstore.payload.response.JwtResponse;
 import com.sujecki.bookstore.payload.response.MessageResponse;
 import com.sujecki.bookstore.repository.RoleRepository;
 import com.sujecki.bookstore.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
