@@ -2,7 +2,9 @@ package com.sujecki.bookstore.service;
 
 import com.sujecki.bookstore.model.Book;
 import com.sujecki.bookstore.model.BookDTO;
+import com.sujecki.bookstore.model.Category;
 import com.sujecki.bookstore.repository.BookRepository;
+import com.sujecki.bookstore.repository.CategoryRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -14,8 +16,12 @@ public class BookService {
 
     private BookRepository bookRepository;
 
-    public BookService(BookRepository bookRepository) {
+    private CategoryRepository categoryRepository;
+
+
+    public BookService(BookRepository bookRepository, CategoryRepository categoryRepository) {
         this.bookRepository = bookRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     private ModelMapper modelMapper = new ModelMapper();
@@ -24,6 +30,19 @@ public class BookService {
         return bookRepository.findAll();
     }
 
+    public List<Book> getAllBooksByCategory(Long id){
+        List<Book> books = null;
+        Category category = categoryRepository.getReferenceById(id);
+        books = bookRepository.findAllByCategory(category);
+        return books;
+    }
+
+    public List<Book> getAllBooksByAuthor(String author){
+        List<Book> books = null;
+        books = bookRepository.findAllByAuthor(author);
+        return books;
+
+    }
     public Optional<Book> getById(Long id){
         return bookRepository.findById(id);
     }

@@ -5,6 +5,7 @@ import com.sujecki.bookstore.model.BookDTO;
 import com.sujecki.bookstore.service.BookService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,10 +23,37 @@ public class BookController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<Book>> getAllBooks() {
-        return new ResponseEntity<>(bookService.getAllBooks(), HttpStatus.OK);
+    public ResponseEntity<?> getAllBooks() {
+        List<Book> books = bookService.getAllBooks();
+
+        if(books.size()>0){
+            return new ResponseEntity<>(books, HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>("Not found any books", HttpStatus.NOT_FOUND);
+        }
     }
 
+    @GetMapping("category/all/{id}")
+    public ResponseEntity<?> getAllBooksByCategory(@PathVariable Long id) {
+        List<Book> books = bookService.getAllBooksByCategory(id);
+
+        if(books.size()>0){
+            return new ResponseEntity<>(books, HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>("Not found any books", HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("author/all/{id}")
+    public ResponseEntity<?> getAllBooksByAuthor(@PathVariable String author) {
+        List<Book> books = bookService.getAllBooksByAuthor(author);
+
+        if(books.size()>0){
+            return new ResponseEntity<>(books, HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>("Not found any books", HttpStatus.NOT_FOUND);
+        }
+    }
     @GetMapping("/{id}")
     public ResponseEntity<?> getBook(@PathVariable Long id) {
         Optional<Book> book = bookService.getById(id);
@@ -36,7 +64,7 @@ public class BookController {
             return new ResponseEntity<>("Not found book with this ID", HttpStatus.NOT_FOUND);
         }
     }
-
+    @PreAuthorize("hasRole('MODERATOR') or hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteBook(@PathVariable Long id) {
         Optional<Book> book = bookService.getById(id);
@@ -49,6 +77,7 @@ public class BookController {
         }
     }
 
+    @PreAuthorize("hasRole('MODERATOR') or hasRole('ADMIN')")
     @PatchMapping("/{id}")
     public ResponseEntity<?> updateBook(@RequestBody BookDTO bookDTO, @PathVariable Long id) {
         Optional<Book> book = bookService.getById(id);
@@ -61,6 +90,7 @@ public class BookController {
         }
     }
 
+    @PreAuthorize("hasRole('MODERATOR') or hasRole('ADMIN')")
     @PatchMapping("buy/{id}")
     public ResponseEntity<?> buyBook(@PathVariable Long id) {
         Optional<Book> book = bookService.getById(id);
@@ -77,7 +107,7 @@ public class BookController {
             return new ResponseEntity<>("Not found book with this ID", HttpStatus.NOT_FOUND);
         }
     }
-
+    @PreAuthorize("hasRole('MODERATOR') or hasRole('ADMIN')")
     @PostMapping("/add")
     public ResponseEntity<?> addNewBook(@RequestBody BookDTO book){
 
